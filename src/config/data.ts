@@ -26,12 +26,12 @@ const build_data: Build[] = [
       col: 561,
     },
     info: {
-      timeLimit: '06:40-22:30 (Sabtu dan Minggu 23:30）',
-      photo: 'dorm',
-      count: 4,
+      // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
+      photo: 'Sandbox-Academia',
+      count: 3,
       tags: ['Asrama putri', 'lantai 6', 'Mesin penjual otomatis tersedia di lantai pertama'],
       brief:
-        'Tipe asrama meliputi kamar 3 orang, 4 orang, dan 5 orang. Setiap asrama dilengkapi dengan tempat tidur dan meja (tempat tidur berukuran 0,9mX1,9m), kamar mandi mandiri, balkon mandiri, dan AC. (Akan ada "santo pelindung" yang malas dari asrama di lantai bawah di setiap asrama, jadi berhati-hatilah saat naik dan turun tangga!) \n\nPaling dekat dengan kafetaria, sangat nyaman, dan bibi asrama sangat baik😄',
+        'Sandbox Academia adalah perusahaan di bidang game yang juga menawarkan layanan pendidikan melalui metode mentoring pribadi. Kami berfokus pada inovasi dalam pengembangan permainan yang kreatif dan mendidik, sambil menyediakan bimbingan yang dipersonalisasi untuk membantu individu mencapai potensi penuh mereka dalam industri game.',
     },
   },
   {
@@ -42,7 +42,7 @@ const build_data: Build[] = [
       col: 561,
     },
     info: {
-      timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
+      // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'SMP-Dian-Didaktika',
       count: 2,
       tags: ['Sekolah', 'SMP'],
@@ -58,10 +58,10 @@ const build_data: Build[] = [
       col: 500,
     },
     info: {
-      timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
+      // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'Artificial-Intelligence-Center-Indonesia',
       count: 3,
-      tags: ['Asrama putri', 'lantai 6', 'Mesin penjual otomatis tersedia di lantai pertama'],
+      tags: ['AI', 'Universitas Indonesia'],
       brief:
         'Sebuah lembaga yang didirikan atas Kerjasama FMIPA Universitas Indonesia dengan UMG Idea Lab Indonesia yang bertujuan untuk mengembangkan sumber daya manusia dalam bidang artificial Intelligence untuk membangun kapabilitas bangsa menyambut revolusi industri 4.0 \n\n Menjadi pusat pembelajaran, penelitian, dan konsultansi bidang artificial intelligence pertama dan terkemuka di Indonesia untuk membangun sumber daya manusia yang berkualitas dan unggul dalam bidang artificial intelligence.',
     },
@@ -74,7 +74,7 @@ const build_data: Build[] = [
       col: 501,
     },
     info: {
-      timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
+      // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'SMP-IT-Al-Haraki',
       count: 2,
       tags: ['Sekolah', 'SMP'],
@@ -90,10 +90,10 @@ const build_data: Build[] = [
       col: 501,
     },
     info: {
-      timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
+      // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'Badr-Interactive',
       count: 2,
-      tags: ['Asrama putra', 'lantai 6', 'Mesin penjual otomatis tersedia di lantai pertama', 'Meituan Disukai'],
+      tags: ['Perangkat Lunak', 'Teknologi'],
       brief:
         'Badr Interactive adalah perusahaan pengembang perangkat lunak yang memiliki visi untuk menciptakan kebaikan bagi jutaan orang setiap hari melalui teknologi. Kami membantu para mitra membangun solusi teknologi yang disesuaikan.',
     },
@@ -106,10 +106,10 @@ const build_data: Build[] = [
       col: 501,
     },
     info: {
-      timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
+      // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'Madrasah-Technonatura',
       count: 3,
-      tags: ['Asrama putra', 'lantai 6', 'Mesin penjual otomatis tersedia di lantai pertama', 'Meituan Disukai'],
+      tags: ['Madrasah', ''],
       brief:
         'Madrasah Internasional TechnoNatura berdiri di bawah payung Yayasan CREATE, atau Centre for Research on Education, Arts, Technology and Entrepreneurship, CREATE Foundation. \n\nPendiri Create Foundation adalah para insan sains dan teknologi yang menyadari pentingnya pendidikan yang progresif bagi anak bangsa untuk kemajuan bangsa di masa depan.  \n\nCREATE Foundation didirikan dengan menyandang cita-cita dari para pendirinya yaitu:  \n\nMewujudkan sistem dan iklim pendidikan yang demokratis dan berkualitas guna mewujudkan bangsa yang berakhlak mulia, kreatif, inovatif, berwawasan kebangsaan, cerdas, sehat, disiplin bertanggung jawab, terampil, serta menguasai ilmu pengetahuan dan teknologi.  \n\nMewujudkan kehidupan sosial budaya yang berkepribadian, kreatif, ekspresif, dinamis dan berdaya tahan terhadap pengaruh globalisasi.  \n\nMeningkatkan pengamalan ajaran agama dalam kehidupan sehari-hari untuk mewujudkan kualitas keimanan dan ketakwaan pada Tuhan Yang Maha Esa dalam kehidupan dan mantabnya persaudaraan antara umat beragama yang berakhlak mulia, toleran, rukun dan damai.  \n\nMeningkatkan kualitas sumber daya manusia yang produktif, mandiri, maju, berdaya saing, berwawasan lingkungan dan berkelanjutan dalam rangka memberdayakan masyarakat dan seluruh kekuatan ekonomi nasional terutama pengusaha kecil, menengah dan koperasi.  \n\nSaat ini Technonatura terdaftar sebagai salah satu institusi pendidikan Madrasah formal dibawah Kemenag  berdomisili di kota Depok, Jawa Barat dengan pusat kegiatan administrasi Technonatura berdomisili di Jalan RTM raya no 16, Cimanggis, Kelapadua. Depok, Jawa Barat.',
     },
@@ -122,7 +122,7 @@ const build_data: Build[] = [
       col: 501,
     },
     info: {
-      timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
+      // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'Kode-Creative-Hub',
       count: 3,
       tags: ['Asrama putra', 'lantai 6', 'Mesin penjual otomatis tersedia di lantai pertama', 'Meituan Disukai'],
@@ -138,7 +138,7 @@ const build_data: Build[] = [
       col: 374,
     },
     info: {
-      timeLimit: '08:00-22:00',
+      // timeLimit: '08:00-22:00',
       photo: 'Infection-studios',
       count: 2,
       tags: ['Motion Graphics', 'Kreatif'],
@@ -153,7 +153,7 @@ const build_data: Build[] = [
       col: 374,
     },
     info: {
-      timeLimit: '08:00-22:00',
+      // timeLimit: '08:00-22:00',
       photo: 'PPMULTINDO',
       count: 3,
       tags: ['Bilik keamanan'],
@@ -168,7 +168,7 @@ const build_data: Build[] = [
       col: 374,
     },
     info: {
-      timeLimit: '08:00-22:00',
+      // timeLimit: '08:00-22:00',
       photo: 'INF-Creative',
       count: 2,
       tags: ['Motion Graphics', 'Kreatif'],
