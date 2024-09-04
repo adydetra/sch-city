@@ -156,8 +156,8 @@ const build_data: Build[] = [
       // timeLimit: '08:00-22:00',
       photo: 'PPMULTINDO',
       count: 3,
-      tags: ['Bilik keamanan'],
-      brief: 'Dari pintu masuk utama sekolah bisa ke Sunshine Online Plaza atau naik bus Bagus banget😄',
+      tags: ['Multimedia', 'Teknologi Informasi', 'Edukasi'],
+      brief: 'PPMultindo adalah asosiasi atau perkumpulan profesi bidang multimedia dan teknologi informasi yang berdiri pada tanggal 17 Februari 2021 dengan SK Kemenkumham No. AHU-0003691.AH.01.07.TAHUN 2021. \n\nTujuan Pendirian PPMultindo adalah menumbuh kembangkan profesi pada bidang multimedia, animasi  dan Teknologi Informasi di Indonesia.  Selain itu untuk mengedukasi masyarakat pada bidang multimedia dan teknologi informasi demi menunjang Pembangunan Sumber Daya Manusia Negara Kesatuan Republik Indonesia',
     },
   },
   {
