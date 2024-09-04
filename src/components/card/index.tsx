@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { Flex, Tag, Image, Typography } from 'antd';
+import { Flex, Tag, Image, Typography, Button } from 'antd'; // Add Button import
 import styles from './index.module.less';
 import { Build } from '@/config/data';
 import food from '@/resources/images/food.svg';
@@ -22,7 +22,6 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
   const [ellipsis, setEllipsis] = useState(true);
   
   useEffect(() => {
-    // Sembunyikan daftar drop-down ketika mengklik elemen di luar elemen ini (klik di tempat lain untuk menyembunyikan daftar drop-down)
     function handleOutsideClick(event: { target: any; }) {
       if (cardRef.current && !cardRef.current.contains(event.target)) {
         hideCard();
@@ -43,6 +42,21 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
             ref={cardRef}
             className={classNames(styles.infoContainer, 'beauti-scroll-bar')}
           >
+            {/* Close Button */}
+            <Button
+              type="primary"
+              onClick={() => {
+                hideCard();
+                backCamera();
+              }}
+              className={styles.closeButton}
+              style={{ position: 'absolute', top: '10', right: '0', marginRight: '20px' }}
+              danger
+            >
+              X
+            </Button>
+
+            {/* Title and Image */}
             <div className={styles.title}>
               {build?.type == 'food' && <img src={food} alt="" />}
               {build?.type == 'play' && <img src={play} alt="" />}
@@ -50,18 +64,20 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
               {!['food', 'play', 'dorm'].includes(build?.type) && <img src={pb} alt="" />}
               {build?.name}
             </div>
+            
+            {/* Time */}
             <div className={styles.time}>{build?.info.timeLimit}</div>
-            {/* tags */}
+
+            {/* Tags */}
             <Flex gap="4px 0" wrap="wrap" style={{ fontSize: '12px' }}>
-              {build?.info.tags?.map((item, index) => {
-                return (
-                  <Tag color="gold" key={index}>
-                    {item}
-                  </Tag>
-                );
-              })}
+              {build?.info.tags?.map((item, index) => (
+                <Tag color="gold" key={index}>
+                  {item}
+                </Tag>
+              ))}
             </Flex>
-            {/* info */}
+
+            {/* Info */}
             <div style={{ whiteSpace: 'pre-wrap' }}>
               <Paragraph
                 key={ellipsis ? 'expanded' : 'collapsed'}
@@ -88,25 +104,18 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
               </Paragraph>
             </div>
 
-            {/* photo */}
+            {/* Photo */}
             {build?.info.photo !== 'resa' && (
               <Flex wrap="wrap" gap={2}>
-                <Image.PreviewGroup
-                  preview={{
-                    onChange: (current, prev) => {},
-                    // console.log(`current index: ${current}, prev index: ${prev}`),
-                  }}
-                >
-                  {new Array(build?.info.count).fill(0).map((item, index) => {
-                    return (
-                      <Image
-                        key={index}
-                        width={'30%'}
-                        height={66}
-                        src={build?.info.photo + '/img_' + (index + 1) + '.JPG'}
-                      />
-                    );
-                  })}
+                <Image.PreviewGroup>
+                  {new Array(build?.info.count).fill(0).map((item, index) => (
+                    <Image
+                      key={index}
+                      width={'30%'}
+                      height={66}
+                      src={build?.info.photo + '/img_' + (index + 1) + '.JPG'}
+                    />
+                  ))}
                 </Image.PreviewGroup>
               </Flex>
             )}
