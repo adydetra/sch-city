@@ -29,7 +29,7 @@ const build_data: Build[] = [
       // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'Sandbox-Academia',
       count: 3,
-      tags: ['Asrama putri', 'lantai 6', 'Mesin penjual otomatis tersedia di lantai pertama'],
+      tags: ['Game', 'Mentor', 'Game Developer', 'Unity'],
       brief:
         'Sandbox Academia adalah perusahaan di bidang game yang juga menawarkan layanan pendidikan melalui metode mentoring pribadi. Kami berfokus pada inovasi dalam pengembangan permainan yang kreatif dan mendidik, sambil menyediakan bimbingan yang dipersonalisasi untuk membantu individu mencapai potensi penuh mereka dalam industri game.',
     },
@@ -109,7 +109,7 @@ const build_data: Build[] = [
       // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'Madrasah-Technonatura',
       count: 3,
-      tags: ['Madrasah', ''],
+      tags: ['Madrasah', 'Yayasan', 'Pendidikan'],
       brief:
         'Madrasah Internasional TechnoNatura berdiri di bawah payung Yayasan CREATE, atau Centre for Research on Education, Arts, Technology and Entrepreneurship, CREATE Foundation. \n\nPendiri Create Foundation adalah para insan sains dan teknologi yang menyadari pentingnya pendidikan yang progresif bagi anak bangsa untuk kemajuan bangsa di masa depan.  \n\nCREATE Foundation didirikan dengan menyandang cita-cita dari para pendirinya yaitu:  \n\nMewujudkan sistem dan iklim pendidikan yang demokratis dan berkualitas guna mewujudkan bangsa yang berakhlak mulia, kreatif, inovatif, berwawasan kebangsaan, cerdas, sehat, disiplin bertanggung jawab, terampil, serta menguasai ilmu pengetahuan dan teknologi.  \n\nMewujudkan kehidupan sosial budaya yang berkepribadian, kreatif, ekspresif, dinamis dan berdaya tahan terhadap pengaruh globalisasi.  \n\nMeningkatkan pengamalan ajaran agama dalam kehidupan sehari-hari untuk mewujudkan kualitas keimanan dan ketakwaan pada Tuhan Yang Maha Esa dalam kehidupan dan mantabnya persaudaraan antara umat beragama yang berakhlak mulia, toleran, rukun dan damai.  \n\nMeningkatkan kualitas sumber daya manusia yang produktif, mandiri, maju, berdaya saing, berwawasan lingkungan dan berkelanjutan dalam rangka memberdayakan masyarakat dan seluruh kekuatan ekonomi nasional terutama pengusaha kecil, menengah dan koperasi.  \n\nSaat ini Technonatura terdaftar sebagai salah satu institusi pendidikan Madrasah formal dibawah Kemenag  berdomisili di kota Depok, Jawa Barat dengan pusat kegiatan administrasi Technonatura berdomisili di Jalan RTM raya no 16, Cimanggis, Kelapadua. Depok, Jawa Barat.',
     },
@@ -125,7 +125,7 @@ const build_data: Build[] = [
       // timeLimit: '06:40-22:30 (23:30 pada hari Sabtu dan Minggu)',
       photo: 'Kode-Creative-Hub',
       count: 3,
-      tags: ['Asrama putra', 'lantai 6', 'Mesin penjual otomatis tersedia di lantai pertama', 'Meituan Disukai'],
+      tags: ['Binus', 'Startup'],
       brief:
         'Kode Creative Hub adalah tempat berkumpulnya komunitas bisnis dan startup Anda. Kami menyediakan tempat yang strategis untuk menyelenggarakan acara, pelatihan, kelas, dan ruang rapat.',
     },
@@ -141,7 +141,7 @@ const build_data: Build[] = [
       // timeLimit: '08:00-22:00',
       photo: 'Infection-studios',
       count: 2,
-      tags: ['Motion Graphics', 'Kreatif'],
+      tags: ['Motion Graphics', 'Kreatif', 'Animation'],
       brief: 'Merupakan perusahaan yang bergerak di Industri Kreatif pada bidang Motion Graphics & Animation, didirikan pada tahun 2014. \n\nKami bekerja dengan penuh dedikasi dan menghasilkan karya terbaik untuk Anda. Kami menyebut diri kami sebagai "Infected ones".',
     },
   },
