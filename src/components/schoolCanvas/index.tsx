@@ -817,7 +817,7 @@ class SchoolCanvas extends React.Component {
               );
             })}
         </div>
-        {/* 介绍卡片 */}
+        {/* Kartu perkenalan */}
         <Card
           showCard={this.state.showCard}
           hideCard={() => this.setState({ showCard: false })}
