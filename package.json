@@ -1,6 +1,6 @@
 {
-  "name": "nanhai-campus",
-  "version": "0.0.0",
+  "name": "depok-creative-city",
+  "type": "module",
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
