@@ -15,8 +15,8 @@
   position: fixed;
   left: 16%;
   top: 24%;
-  width: 350px;
-  height: 400px;
+  width: 400px;
+  height: 450px;
   border-radius: 16px;
   overflow: hidden;
   z-index: 10;
@@ -76,5 +76,14 @@
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+	.card-box {
+    width: 300px;
+  }
+  .title {
+    font-size: 16px !important;
   }
 }
