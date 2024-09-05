@@ -206,6 +206,21 @@ const build_data: Build[] = [
     },
   },
   {
+    name: 'SLB',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'SLB',
+      count: 2,
+      tags: ['Sekolah', 'Negeri', 'Ratujaya'],
+      brief: 'SLB Negeri Depok adalah sebuah sekolah luar biasa negeri yang terletak di Ratujaya, Kec. Cipayung tepatnya di Perumahan Permata Regency Blok A3. SLB Negeri Depok berdiri pada tahun 2012. Kepala sekolah sekarang adalah Lia Cornelia Dewi S.Pd. Status Sekolah ini adalah Sekolah Standar Nasional.',
+    },
+  },
+  {
     name: 'STT-Nurul-Fikri',
     type: 'safe',
     coordinate: {
