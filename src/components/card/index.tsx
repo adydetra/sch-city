@@ -84,7 +84,7 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
                 ellipsis={
                   ellipsis
                     ? {
-                        rows: 30,
+                        rows: 50,
                         expandable: true,
                         symbol: 'Teruskan',
                         onExpand: () => setEllipsis(!ellipsis),
