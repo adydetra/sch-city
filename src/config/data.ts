@@ -175,6 +175,126 @@ const build_data: Build[] = [
       brief: 'Merupakan perusahaan yang bergerak di Industri Kreatif  pada bidang Motion Graphics & Animation, didirikan pada tahun 2014. Kami bekerja dengan penuh dedikasi dan menghasilkan karya terbaik untuk Anda. Kami menyebut diri kami sebagai "Infected ones". \n\nInf Creative melayani pembuatan motion grapics & animation dengan kualitas terbaik. Cocok untuk kebutuhan visual perusahaan dan bisnis guna meningkatkan awareness & branding',
     },
   },
+  {
+    name: 'UI',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'UI',
+      count: 2,
+      tags: ['Universitas', 'Pendidikan'],
+      brief: 'UI merupakan institusi pendidikan tinggi tertua di Indonesia. Beberapa perguruan tinggi negeri terkemuka di Indonesia seperti Institut Teknologi Bandung, Universitas Airlangga, Institut Pertanian Bogor, Universitas Hasanuddin, Universitas Negeri Jakarta, dan Politeknik Negeri Jakarta pada awalnya merupakan bagian dari UI hingga kemudian memisahkan diri menjadi institusi tersendiri.',
+    },
+  },
+  {
+    name: 'Polimedia',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'Polimedia',
+      count: 3,
+      tags: ['Universitas', 'Kreatif', 'Pendidikan'],
+      brief: 'Polimedia merupakan lembaga pendidikan tinggi vokasi pertama dan satu-satunya yang dirancang secara khusus untuk menyediakan berbagai program studi yang relevan dengan dunia industri kreatif.',
+    },
+  },
+  {
+    name: 'STT-Nurul-Fikri',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'STT-Nurul-Fikri',
+      count: 3,
+      tags: ['Pendidikan', 'Perguruan Tinggi'],
+      brief: 'Sejarah Perjalanan Berdirinya Sekolah Tinggi Teknologi Terpadu Nurul Fikri Sekolah Tinggi Teknologi Terpadu Nurul Fikri (populer disebut STT-NF) merupakan perguruan tinggi yang memadukan keilmuan praktis di bidang teknologi informasi dengan pengembangan kepribadian islami, kompeten dan berkarakter. Pada tahun 2012, STT-NF resmi berdiri berdasarkan SK Menteri Pendidikan dan Kebudayaan Nomor 269/E/O/2012.',
+    },
+  },
+  {
+    name: 'Dinas-Kominfo',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'Dinas-Kominfo',
+      count: 2,
+      tags: ['Dinas', 'Komunikasi', 'Informatika'],
+      brief: 'Dinas Komunikasi dan Informatika mempunyai tugas membantu Bupati menyelenggarakan urusan pemerintahan bidang komunikasi dan informatika, bidang statistik dan bidang persandian. Dinas Komunikasi dan Informatika menyelenggarakan fungsi : Perumusan kebijakan bidang komunikasi dan informatika, statistik, dan persandian.',
+    },
+  },
+  {
+    name: 'Dinas-Pendidikan',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'Dinas-Pendidikan',
+      count: 2,
+      tags: ['Dinas', 'Pendidikan', 'Daerah'],
+      brief: 'Dinas Pendidikan merupakan unsur pelaksana Pemerintah Daerah yang dipimpin oleh seorang kepala dinas yang berada dibawah dan bertanggung jawab kepada Wali Kota melalui Sekretaris Daerah.',
+    },
+  },
+  {
+    name: 'Bappeda',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'Bappeda',
+      count: 2,
+      tags: ['Daerah', 'Penelitian'],
+      brief: 'Badan Perencanaan Pembangunan Daerah \n\nBappeda mempunyai tugas melaksanakan penyusunan perencanaan pembangunan Daerah, pelaksanaan perencanaan pembangunan Daerah, pengendalian, monitoring dan evaluasi pelaksanaan perencanaan pembangunan Daerah serta menyelenggarakan tugas penelitian dan pengembangan.',
+    },
+  },
+  {
+    name: 'Kominfo',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'Kominfo',
+      count: 2,
+      tags: ['Kementerian', 'Informatika', 'Informasi'],
+      brief: 'Kementerian Komunikasi dan Informatika (Kemenkominfo atau Kominfo) adalah Kementerian yang mengurusi bidang komunikasi dan informatika. Kementerian Komunikasi dan Informatika sebelumnya bernama Kementerian Negara Komunikasi dan Informasi (2001–2005) dan Departemen Komunikasi dan Informatika (2005–2009).',
+    },
+  },
+  {
+    name: 'Depok-Creative-Center',
+    type: 'safe',
+    coordinate: {
+      row: 640,
+      col: 374,
+    },
+    info: {
+      // timeLimit: '08:00-22:00',
+      photo: 'Depok-Creative-Center',
+      count: 2,
+      tags: ['Kreatif', 'Inovatif'],
+      brief: 'Pusat perkotaan yang dinamis dan penuh semangat yang berfungsi sebagai tempat berkembangnya ekspresi artistik dan solusi inovatif.',
+    },
+  },
 ];
 
 const buildNameMap = new Map();
