@@ -1,33 +1,36 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
-let pointerControls: PointerLockControls;
-let collidableObjects: any;
+
+let pointerControls: PointerLockControls | null = null;
+let collidableObjects: THREE.Object3D[] = [];
 
 let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
 let canJump = false;
+
 let cameraY = 2.6;
-let raycaster;
+let raycaster: THREE.Raycaster | null = null;
+
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 let playerPos = new THREE.Vector3(50, 2, -70);
 
 function initPlayer(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.Renderer) {
-  pointerControls = new PointerLockControls(camera, renderer.domElement);
+  pointerControls = new PointerLockControls(camera as THREE.PerspectiveCamera, renderer.domElement);
 
-  // 点击解锁
-  pointerControls.addEventListener('lock', function () {
+  // Klik untuk lock
+  pointerControls.addEventListener('lock', () => {
     // console.log('Pointer Locked');
   });
 
-  // esc暂停
-  pointerControls.addEventListener('unlock', function () {
+  // ESC untuk unlock
+  pointerControls.addEventListener('unlock', () => {
     // console.log('Pointer Unlocked');
   });
 
-  const onKeyDown = function (event: KeyboardEvent) {
+  const onKeyDown = (event: KeyboardEvent) => {
     switch (event.code) {
       case 'ArrowUp':
       case 'KeyW':
@@ -52,23 +55,20 @@ function initPlayer(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.Re
     }
   };
 
-  const onKeyUp = function (event: KeyboardEvent) {
+  const onKeyUp = (event: KeyboardEvent) => {
     switch (event.code) {
       case 'ArrowUp':
       case 'KeyW':
         moveForward = false;
         break;
-
       case 'ArrowLeft':
       case 'KeyA':
         moveLeft = false;
         break;
-
       case 'ArrowDown':
       case 'KeyS':
         moveBackward = false;
         break;
-
       case 'ArrowRight':
       case 'KeyD':
         moveRight = false;
@@ -78,24 +78,22 @@ function initPlayer(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.Re
 
   document.addEventListener('keydown', onKeyDown);
   document.addEventListener('keyup', onKeyUp);
-  scene.add(pointerControls.getObject());
 
-  raycaster = new THREE.Raycaster(
-    new THREE.Vector3(),
-    new THREE.Vector3(0, -1, 0),
-    0,
-    10,
-  );
+  // ⬇️ getObject() → object (non-deprecated)
+  scene.add(pointerControls.object);
+
+  raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
 }
 
 function aupdatePlayer(delta: number) {
+  if (!pointerControls || !raycaster) return;
+
   if (pointerControls.isLocked === true) {
-    raycaster.ray.origin.copy(pointerControls.getObject().position);
-    // raycaster.ray.origin.y -= 10;
+    // ⬇️ getObject() → object
+    raycaster.ray.origin.copy(pointerControls.object.position);
+
     const intersections = raycaster.intersectObjects([], false);
     const onObject = intersections.length > 0;
-
-    // const delta = (time - prevTime) / 1000;
 
     velocity.x -= velocity.x * 10.0 * delta;
     velocity.z -= velocity.z * 10.0 * delta;
@@ -103,7 +101,7 @@ function aupdatePlayer(delta: number) {
 
     direction.z = Number(moveForward) - Number(moveBackward);
     direction.x = Number(moveRight) - Number(moveLeft);
-    direction.normalize(); // this ensures consistent movements in all directions
+    direction.normalize();
 
     if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
     if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
@@ -112,141 +110,134 @@ function aupdatePlayer(delta: number) {
       velocity.y = Math.max(0, velocity.y);
       canJump = true;
     }
+
     pointerControls.moveRight(-velocity.x * delta);
     pointerControls.moveForward(-velocity.z * delta);
-    pointerControls.getObject().position.y += velocity.y * delta; // new behavior
 
-    if (pointerControls.getObject().position.y < cameraY) {
+    // ⬇️ getObject() → object
+    pointerControls.object.position.y += velocity.y * delta;
+
+    if (pointerControls.object.position.y < cameraY) {
       velocity.y = 0;
-      pointerControls.getObject().position.y = cameraY;
+      pointerControls.object.position.y = cameraY;
       canJump = true;
     }
   }
 }
 
-// 更新player
+// Update player tiap frame (dipakai di SchoolCanvas)
 function updatePlayer(delta: number) {
-  let playerSpeed = 100;
-  // 惯性减速
+  if (!pointerControls) return;
+
+  const playerSpeed = 100;
+
+  // Inersia
   velocity.x -= velocity.x * 10.0 * delta;
   velocity.z -= velocity.z * 10.0 * delta;
-  if (detectPlayerCollision() == false) {
+
+  if (detectPlayerCollision() === false) {
     direction.z = Number(moveForward) - Number(moveBackward);
     direction.x = Number(moveRight) - Number(moveLeft);
-    direction.normalize(); // this ensures consistent movements in all directions
+    direction.normalize();
 
     if (moveForward || moveBackward) velocity.z += direction.z * playerSpeed * delta;
     if (moveLeft || moveRight) velocity.x += direction.x * playerSpeed * delta;
 
-    // 平行于xz平面，向侧面移动摄像机。
-    pointerControls.moveRight(velocity.x * delta);
-    // 平行于xz平面，向前移动摄像机
-    pointerControls.moveForward(velocity.z * delta);
+    pointerControls.moveRight(velocity.x * delta);   // geser XZ
+    pointerControls.moveForward(velocity.z * delta); // maju/mundur
   } else {
     velocity.x = 0;
     velocity.z = 0;
   }
 
-  velocity.y -= 9.8 * 50 * delta; // 50.0 = 质量
+  velocity.y -= 9.8 * 50 * delta; // gravitasi
+
   if (detectOnObject()) {
     velocity.y = Math.max(0, velocity.y);
     canJump = true;
   }
-  pointerControls.getObject().position.y += velocity.y * delta;
 
-  if (pointerControls.getObject().position.y < cameraY) {
+  // ⬇️ getObject() → object
+  pointerControls.object.position.y += velocity.y * delta;
+
+  if (pointerControls.object.position.y < cameraY) {
     velocity.y = 0;
-    pointerControls.getObject().position.y = cameraY;
+    pointerControls.object.position.y = cameraY;
     canJump = true;
   }
 }
 
-// 检查碰撞
+// Cek tabrakan depan/samping
 function detectPlayerCollision() {
-  let rotationMatrix;
-  // Get direction of camera
+  if (!pointerControls) return false;
+
+  let rotationMatrix: THREE.Matrix4 | undefined;
+  const collisionDistance = 0.5;
+
+  // Arah kamera
   let cameraDirection = pointerControls.getDirection(new THREE.Vector3(0, 0, 0)).clone();
-  let collisionDistance = 0.5;
 
-  // Check which direction we're moving (not looking)
-  // Flip matrix to that direction so that we can reposition the ray
+  // Tentukan arah gerak (bukan arah pandang) → rotasi vektor
   if (moveBackward) {
-    rotationMatrix = new THREE.Matrix4();
-    rotationMatrix.makeRotationY(degreesToRadians(180));
+    rotationMatrix = new THREE.Matrix4().makeRotationY(degreesToRadians(180));
   } else if (moveLeft) {
-    rotationMatrix = new THREE.Matrix4();
-    rotationMatrix.makeRotationY(degreesToRadians(90));
+    rotationMatrix = new THREE.Matrix4().makeRotationY(degreesToRadians(90));
   } else if (moveRight) {
-    rotationMatrix = new THREE.Matrix4();
-    rotationMatrix.makeRotationY(degreesToRadians(270));
+    rotationMatrix = new THREE.Matrix4().makeRotationY(degreesToRadians(270));
   }
 
-  // Player is not moving forward, apply rotation matrix needed
-  if (rotationMatrix !== undefined) {
-    cameraDirection.applyMatrix4(rotationMatrix);
-  }
+  if (rotationMatrix) cameraDirection.applyMatrix4(rotationMatrix);
 
-  // Apply ray to player camera
-  let rayCaster = new THREE.Raycaster(
-    pointerControls.getObject().position,
-    cameraDirection,
-  );
+  // Ray dari posisi player
+  const origin = pointerControls.object.position;
+  const rayCaster = new THREE.Raycaster(origin, cameraDirection);
 
-  // If our ray hit a collidable object, return true
-  if (rayIntersect(rayCaster, collisionDistance)) {
-    return true;
-  } else {
-    return false;
-  }
+  return rayIntersect(rayCaster, collisionDistance);
 }
 
-// 检查是否在物体上方
+// Cek apakah di atas suatu objek (untuk loncat/gravitasi)
 function detectOnObject() {
-  let collisionDistance = cameraY;
-  let rayCaster = new THREE.Raycaster(
-    pointerControls.getObject().position,
-    new THREE.Vector3(0, -1, 0),
-  );
-  // rayCaster.ray.origin.y -= cameraY;
-  if (rayIntersect(rayCaster, collisionDistance)) {
-    return true;
-  } else {
-    return false;
-  }
+  if (!pointerControls) return false;
+
+  const collisionDistance = cameraY;
+  const origin = pointerControls.object.position.clone();
+  const rayCaster = new THREE.Raycaster(origin, new THREE.Vector3(0, -1, 0));
+
+  return rayIntersect(rayCaster, collisionDistance);
 }
 
-// 射线检测
-function rayIntersect(ray: THREE.Raycaster, distance: any) {
-  var intersects = ray.intersectObjects(collidableObjects);
-  for (var i = 0; i < intersects.length; i++) {
-    if (intersects[i].distance < distance) {
-      return true;
-    }
+// Raycast helper
+function rayIntersect(ray: THREE.Raycaster, distance: number) {
+  // `collidableObjects` berisi array Object3D (mis. scene.children)
+  const intersects = ray.intersectObjects(collidableObjects, true);
+  for (let i = 0; i < intersects.length; i++) {
+    if (intersects[i].distance < distance) return true;
   }
   return false;
 }
 
-// 角度转弧度
+// Derajat → radian
 function degreesToRadians(degrees: number) {
   return (degrees * Math.PI) / 180;
 }
 
 function getPointerControl() {
-  return pointerControls;
+  return pointerControls!;
 }
 
-// 初始化碰撞集合
-function initCollidableObjects(buildings: THREE.Scene) {
-  collidableObjects = buildings;
+// Inisialisasi daftar objek yang bisa ditabrak
+function initCollidableObjects(objects: THREE.Object3D[]) {
+  collidableObjects = objects || [];
 }
 
-// 获取当前玩家位置
+// Ambil posisi player saat ini (cache)
 function getPlayerPos() {
   return playerPos;
 }
 
 function setPlayerPos() {
-  playerPos = pointerControls.getObject().position.clone();
+  if (!pointerControls) return;
+  playerPos = pointerControls.object.position.clone();
 }
 
 export {

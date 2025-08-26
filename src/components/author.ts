@@ -1,82 +1,57 @@
-import { load_font } from '@/utils/loaders';
+// components/author.tsx
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { Font } from 'three/examples/jsm/loaders/FontLoader';
+import { load_font } from '@/utils/loaders';
 import my_font from '@/resources/fonts/optimer_regular.typeface.json';
-let authorMesh, textMesh2, textGeo, materials: THREE.MeshPhongMaterial[];
 
-let text = 'three.js',
-  bevelEnabled = true,
-  font: Font | undefined,
-  fontName = 'optimer', // helvetiker, optimer, gentilis, droid sans, droid serif
-  fontWeight = 'regular'; // normal bold
-const height = 4,
-  size = 10,
-  curveSegments = 12,
-  bevelThickness = 2,
-  bevelSize = 1;
+let font: Font | undefined;
 
-const mirror = false;
-
-const fontMap = {
-  helvetiker: 0,
-  optimer: 1,
-  gentilis: 2,
-  'droid/droid_sans': 3,
-  'droid/droid_serif': 4,
-};
-
-const weightMap = {
-  regular: 0,
-  bold: 1,
-};
-
-const reverseFontMap = [];
-const reverseWeightMap = [];
-
-for (const i in fontMap) reverseFontMap[fontMap[i]] = i;
-for (const i in weightMap) reverseWeightMap[weightMap[i]] = i;
-
-materials = [
-  new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }), // front
-  new THREE.MeshPhongMaterial({ color: 0xffffff }), // side
+// Default materials: front (flat) + side
+const materials: THREE.MeshPhongMaterial[] = [
+  new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }),
+  new THREE.MeshPhongMaterial({ color: 0xffffff }),
 ];
 
+// Text options (dipertahankan agar hasil sama)
+const TEXT = 'three.js';
+const OPTS = {
+  size: 10,
+  height: 4,
+  curveSegments: 12,
+  bevelEnabled: true,
+  bevelThickness: 2,
+  bevelSize: 1,
+};
+
+// Muat font via loader (sesuai perilaku lama).
+// Panggil ini sekali sebelum createText().
 function loadFont() {
-  load_font.load(fontName + '_' + fontWeight + '.typeface.json', function (response) {
-    font = response;
+  load_font.load('optimer_regular.typeface.json', (res) => {
+    font = res;
   });
 }
 
+// Buat mesh teks 3D. Jika font belum termuat, fallback ke bundled JSON.
 function createText() {
-  textGeo = new TextGeometry(text, {
-    font: font!,
-    size: size,
-    height: height,
-    curveSegments: curveSegments,
-    bevelThickness: bevelThickness,
-    bevelSize: bevelSize,
-    bevelEnabled: bevelEnabled,
+  const f = font ?? new Font(my_font as any);
+
+  const geo = new TextGeometry(TEXT, {
+    font: f,
+    size: OPTS.size,
+    height: OPTS.height,
+    curveSegments: OPTS.curveSegments,
+    bevelEnabled: OPTS.bevelEnabled,
+    bevelThickness: OPTS.bevelThickness,
+    bevelSize: OPTS.bevelSize,
   });
 
-  //   文字
-  authorMesh = new THREE.Mesh(textGeo, materials);
+  const mesh = new THREE.Mesh(geo, materials);
 
-  authorMesh.rotation.x = 0;
-  authorMesh.rotation.y = Math.PI * 2;
+  // Orientasi sama seperti kode lama: rotate -90° di X
+  mesh.rotation.set(-Math.PI / 2, 0, 0);
 
-  //   镜像
-  if (mirror) {
-    textMesh2 = new THREE.Mesh(textGeo, materials);
-    textMesh2.position.x = centerOffset;
-    textMesh2.position.y = -hover;
-    textMesh2.position.z = height;
-    textMesh2.rotation.x = Math.PI;
-    textMesh2.rotation.y = Math.PI * 2;
-  }
-  authorMesh.rotateX(-Math.PI / 2);
-  //   authorMesh.rotateZ(Math.PI / 2);
-  return authorMesh;
+  return mesh;
 }
 
 export { createText, loadFont };

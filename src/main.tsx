@@ -1,13 +1,12 @@
 import './index.css';
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import SchoolController from './App';
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root')!);
+root.render(
   // <React.StrictMode>
-  <SchoolController />,
-  // </React.StrictMode>,
-  document.getElementById('root'),
+  <SchoolController />
+  // </React.StrictMode>
 );

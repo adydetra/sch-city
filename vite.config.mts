@@ -11,16 +11,12 @@ export default defineConfig({
     }),
   ],
   base: './',
-  build: {
-    minify: 'terser', // 使用 Terser 进行代码压缩混淆
-  },
   css: {
     modules: {
       localsConvention: 'camelCaseOnly',
     },
   },
   resolve: {
-    // 设置文件./src路径为 @
     alias: [
       {
         find: '@',
