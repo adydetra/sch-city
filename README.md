@@ -10,7 +10,7 @@ Clone Repository
 
 ```bash
 git clone https://github.com/adydetra/sch-city.git
-cd adydetra
+cd sch-city
 ```
 
 Install package manager
