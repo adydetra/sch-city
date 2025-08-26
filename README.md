@@ -4,12 +4,20 @@
 
 ## Get Started
 
-Required to install: [Node.js](https://nodejs.org/)
+Required to install:
+
+- [Node.js](https://nodejs.org/)
+- [Bun](https://bun.com/)
 
 Clone Repository
 
 ```bash
 git clone https://github.com/adydetra/sch-city.git
+```
+
+Direct to project
+
+```bash
 cd sch-city
 ```
 
