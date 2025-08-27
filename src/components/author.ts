@@ -2,16 +2,13 @@
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { Font } from 'three/examples/jsm/loaders/FontLoader';
-import { load_font } from '@/utils/loaders';
 import my_font from '@/resources/fonts/optimer_regular.typeface.json';
+import { load_font } from '@/utils/loaders';
 
 let font: Font | undefined;
 
 // Default materials: front (flat) + side
-const materials: THREE.MeshPhongMaterial[] = [
-  new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }),
-  new THREE.MeshPhongMaterial({ color: 0xffffff }),
-];
+const materials: THREE.MeshPhongMaterial[] = [new THREE.MeshPhongMaterial({ color: 0xFFFFFF, flatShading: true }), new THREE.MeshPhongMaterial({ color: 0xFFFFFF })];
 
 // Text options (dipertahankan agar hasil sama)
 const TEXT = 'three.js';

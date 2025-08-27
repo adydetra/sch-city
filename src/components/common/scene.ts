@@ -2,14 +2,15 @@ import * as THREE from 'three';
 
 let scene = new THREE.Scene();
 
-const createScene = () => {
-  if (scene) return scene;
+function createScene() {
+  if (scene)
+    return scene;
   scene = new THREE.Scene();
   return scene;
-};
+}
 
-const clearScene = () => {
+function clearScene() {
   scene = null;
-};
+}
 
-export { scene, createScene, clearScene };
+export { clearScene, createScene, scene };

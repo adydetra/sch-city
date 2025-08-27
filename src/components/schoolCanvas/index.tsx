@@ -1,41 +1,29 @@
-import './index.less';
+import type Stats from 'stats.js';
+import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import type { Build } from '@/config/data';
+import classnames from 'classnames';
 import React from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import TWEEN from 'three/examples/jsm/libs/tween.module.js';
 // import { gui } from '../common/gui';
 import { Sky } from 'three/examples/jsm/objects/Sky';
-import Stats from 'stats.js';
-import { initLoaders, load_gltf, load_texture } from '@/utils/loaders';
-import Animations from '@/utils/animations';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
-import { Build, buildNameMap, build_data } from '@/config/data';
-import classnames from 'classnames';
-import locIcon from '@/resources/images/loc-icon.svg';
-import { getDistanceFromPath, getNodesInShortestPathOrder } from '@/findPath/helper';
-import { astar } from '@/findPath/astar';
-import _ from 'lodash';
 import Loading from '@/components/loading';
+import { build_data, buildNameMap } from '@/config/data';
 import { roadPoint } from '@/config/grid';
-import { drawCircle, drawStreamingRoadLight, removeObj } from '@/utils';
+import { boardConfig, removeResizeListener, resizeEventListener, sizes } from '@/config/resize';
+import { astar } from '@/findPath/astar';
+import { getDistanceFromPath, getNodesInShortestPathOrder } from '@/findPath/helper';
+import locIcon from '@/resources/images/loc-icon.svg';
 import school from '@/resources/models/MapDepok3.glb';
 import ground from '@/resources/textures/ground.png';
-import {
-  removeResizeListener,
-  resizeEventListener,
-  sizes,
-  boardConfig,
-} from '@/config/resize';
-import {
-  getPlayerPos,
-  getPointerControl,
-  initCollidableObjects,
-  initPlayer,
-  setPlayerPos,
-  updatePlayer,
-} from '../player_one';
-import TWEEN from 'three/examples/jsm/libs/tween.module.js';
-import Card from '../card';
+import { drawCircle, drawStreamingRoadLight, removeObj } from '@/utils';
+import Animations from '@/utils/animations';
 import { llToCoord2 } from '@/utils/lngLatToXY';
+import { initLoaders, load_gltf, load_texture } from '@/utils/loaders';
+import Card from '../card';
+import { getPlayerPos, getPointerControl, initCollidableObjects, initPlayer, setPlayerPos, updatePlayer } from '../player_one';
+import './index.less';
 
 interface LocationLike {
   latitude?: number;
@@ -174,7 +162,7 @@ class SchoolCanvas extends React.Component<Props> {
       (_url, loaded, total) => {
         const pct = Math.floor((loaded / total) * 100);
         this.setState({ loadingProcess: pct });
-      },
+      }
     );
 
     // 初始化加载器
@@ -254,10 +242,7 @@ class SchoolCanvas extends React.Component<Props> {
       this.controls = getPointerControl();
 
       const pos = getPlayerPos();
-      new TWEEN.Tween(this.camera.position)
-        .to(pos, 2000)
-        .easing(TWEEN.Easing.Exponential.Out)
-        .start();
+      new TWEEN.Tween(this.camera.position).to(pos, 2000).easing(TWEEN.Easing.Exponential.Out).start();
       new TWEEN.Tween(this.camera.rotation)
         .to({ x: 0, y: (5 * Math.PI) / 4, z: 0 }, 2000)
         .easing(TWEEN.Easing.Exponential.Out)
@@ -334,10 +319,10 @@ class SchoolCanvas extends React.Component<Props> {
     sky.scale.setScalar(10000);
     this.scene.add(sky);
     const skyUniforms = (sky.material as THREE.ShaderMaterial).uniforms;
-    skyUniforms['turbidity'].value = 10;
-    skyUniforms['rayleigh'].value = 3;
-    skyUniforms['mieCoefficient'].value = 0.005;
-    skyUniforms['mieDirectionalG'].value = 0.08;
+    skyUniforms.turbidity.value = 10;
+    skyUniforms.rayleigh.value = 3;
+    skyUniforms.mieCoefficient.value = 0.005;
+    skyUniforms.mieDirectionalG.value = 0.08;
 
     // 太阳
     const sun = new THREE.Vector3();
@@ -346,7 +331,7 @@ class SchoolCanvas extends React.Component<Props> {
     const theta = THREE.MathUtils.degToRad(200);
     sun.setFromSphericalCoords(1, phi, theta);
 
-    (sky.material as THREE.ShaderMaterial).uniforms['sunPosition'].value.copy(sun);
+    (sky.material as THREE.ShaderMaterial).uniforms.sunPosition.value.copy(sun);
     this.scene.environment = pmremGenerator.fromScene(sky).texture;
   };
 
@@ -407,10 +392,10 @@ class SchoolCanvas extends React.Component<Props> {
   loadPlain = () => {
     if (!this.scene) return;
 
-    let gridWidth = boardConfig.cols * boardConfig.nodeDimensions.width,
-      gridHeight = boardConfig.rows * boardConfig.nodeDimensions.height;
+    const gridWidth = boardConfig.cols * boardConfig.nodeDimensions.width;
+    const gridHeight = boardConfig.rows * boardConfig.nodeDimensions.height;
 
-    let groundGeometry = new THREE.PlaneGeometry(gridWidth, gridHeight, gridWidth, gridHeight);
+    const groundGeometry = new THREE.PlaneGeometry(gridWidth, gridHeight, gridWidth, gridHeight);
     groundGeometry.rotateX(-Math.PI / 2);
 
     load_texture.load(
@@ -434,17 +419,13 @@ class SchoolCanvas extends React.Component<Props> {
         const size = boardConfig.cols * boardConfig.nodeDimensions.height;
         const divisions = boardConfig.cols;
         const gridHelper = new THREE.GridHelper(size, divisions, 0x5c78bd, 0x5c78bd);
-        gridHelper.position.set(
-          this.ground.position.x,
-          this.ground.position.y + 1,
-          this.ground.position.z,
-        );
+        gridHelper.position.set(this.ground.position.x, this.ground.position.y + 1, this.ground.position.z);
         this.scene!.add(gridHelper);
       },
       undefined,
-      function (error) {
+      (error) => {
         console.log(error);
-      },
+      }
     );
   };
 
@@ -486,7 +467,7 @@ class SchoolCanvas extends React.Component<Props> {
   startFindPath = (start: Build, finish: Build) => {
     const startNode = this.grid[start.coordinate.row][start.coordinate.col];
     const finishNode = this.grid[finish.coordinate.row][finish.coordinate.col];
-    let nodesToAnimate: any = [];
+    const nodesToAnimate: any = [];
     const find_result = astar(this.grid, startNode, finishNode, nodesToAnimate);
     if (find_result == false) return null;
 
@@ -513,10 +494,10 @@ class SchoolCanvas extends React.Component<Props> {
     for (const point of this.state.guidePointList) {
       // Daftarkan element DOM
       if (!point.element) {
-        const element = document.querySelector('.build_' + point.id) as HTMLElement | null;
+        const element = document.querySelector(`.build_${point.id}`) as HTMLElement | null;
         if (!element) continue;
         point.element = element;
-        this.addPointClickSelect('.build_' + point.id, point.position!, point);
+        this.addPointClickSelect(`.build_${point.id}`, point.position!, point);
       }
 
       // 3D->NDC
@@ -535,9 +516,7 @@ class SchoolCanvas extends React.Component<Props> {
         if ((intersects[0].object as any).name === point.name) {
           point.element!.classList.add('visible');
         } else {
-          intersectionDistance < pointDistance
-            ? point.element!.classList.remove('visible')
-            : point.element!.classList.add('visible');
+          intersectionDistance < pointDistance ? point.element!.classList.remove('visible') : point.element!.classList.add('visible');
         }
       } else {
         point.element!.classList.add('visible');
@@ -591,14 +570,7 @@ class SchoolCanvas extends React.Component<Props> {
       this.cloudsArr = [];
     }
 
-    Animations.animateCamera(
-      this.camera,
-      this.controls,
-      { x: 0, y: 250, z: 190 },
-      { x: 0, y: 0, z: 0 },
-      time,
-      callback,
-    );
+    Animations.animateCamera(this.camera, this.controls, { x: 0, y: 250, z: 190 }, { x: 0, y: 0, z: 0 }, time, callback);
   };
 
   resetCamera = () => {
@@ -643,17 +615,10 @@ class SchoolCanvas extends React.Component<Props> {
       this.state.showCard && this.setState({ showCard: false });
       if (!this.camera || !this.controls) return;
 
-      Animations.animateCamera(
-        this.camera,
-        this.controls,
-        { x: position.x - 10, y: position.y + 80, z: position.z + 80 },
-        { x: position.x - 50, y: position.y, z: position.z },
-        1500,
-        () => {
-          if (this.controls) this.controls.enabled = false;
-          this.setState({ showCard: true, currentCardValue: cardValue });
-        },
-      );
+      Animations.animateCamera(this.camera, this.controls, { x: position.x - 10, y: position.y + 80, z: position.z + 80 }, { x: position.x - 50, y: position.y, z: position.z }, 1500, () => {
+        if (this.controls) this.controls.enabled = false;
+        this.setState({ showCard: true, currentCardValue: cardValue });
+      });
     });
   };
 
@@ -697,7 +662,7 @@ class SchoolCanvas extends React.Component<Props> {
           {this.state.guidePointList.length > 0 &&
             this.state.guidePointList.map((obj: any) => {
               return (
-                <div className={classnames('point', 'build_' + obj.id)} key={obj.id}>
+                <div className={classnames('point', `build_${obj.id}`)} key={obj.id}>
                   <div className="dynamic">
                     <img src={locIcon} className="label-icon" />
                     <span className="name">{obj.name}</span>
@@ -708,12 +673,7 @@ class SchoolCanvas extends React.Component<Props> {
         </div>
 
         {/* Kartu perkenalan */}
-        <Card
-          showCard={this.state.showCard}
-          hideCard={() => this.setState({ showCard: false })}
-          build={this.state.currentCardValue}
-          backCamera={this.initCamera}
-        />
+        <Card showCard={this.state.showCard} hideCard={() => this.setState({ showCard: false })} build={this.state.currentCardValue} backCamera={this.initCamera} />
       </div>
     );
   }

@@ -1,8 +1,8 @@
 // components/player_three.tsx
 import * as THREE from 'three';
 import { Capsule } from 'three/examples/jsm/math/Capsule';
-import capsuleHelper from './capsuleHelper';
 import loadGltf from '@/utils/loaders';
+import capsuleHelper from './capsuleHelper';
 import { scene } from './common/scene';
 
 type ActionMap = Record<string, THREE.AnimationAction>;
@@ -17,7 +17,7 @@ class Player {
   // Physics / movement
   private playerCapsule!: Capsule;
   private playerColliderHelper!: THREE.Group;
-  private playerFixVector!: THREE.Vector3;     // offset so feet touch the ground
+  private playerFixVector!: THREE.Vector3; // offset so feet touch the ground
   private playerVelocity!: THREE.Vector3;
   private playerDirection!: THREE.Vector3;
   private playerOnFloor = false;
@@ -31,6 +31,7 @@ class Player {
     D: false,
     Space: false,
   };
+
   private playerActionState!: { forward: number; turn: number };
 
   // External deps
@@ -52,11 +53,7 @@ class Player {
   /** Basic init for vectors, collider, and state */
   private init() {
     // Collider capsule (Z-up in this scene setup)
-    this.playerCapsule = new Capsule(
-      new THREE.Vector3(0, 0, this.R),
-      new THREE.Vector3(0, 0, this.H - this.R),
-      this.R
-    );
+    this.playerCapsule = new Capsule(new THREE.Vector3(0, 0, this.R), new THREE.Vector3(0, 0, this.H - this.R), this.R);
 
     // Visual helper for the capsule
     this.playerColliderHelper = capsuleHelper(this.R, this.H);
@@ -72,7 +69,8 @@ class Player {
 
   /** Forward vector (world) */
   private getForwardVector() {
-    if (!this.player) return this.playerDirection.set(0, 0, 1);
+    if (!this.player)
+      return this.playerDirection.set(0, 0, 1);
     this.player.getWorldDirection(this.playerDirection);
     this.playerDirection.normalize();
     return this.playerDirection;
@@ -80,7 +78,8 @@ class Player {
 
   /** Side vector (strafe) */
   private getSideVector() {
-    if (!this.player) return this.playerDirection.set(1, 0, 0);
+    if (!this.player)
+      return this.playerDirection.set(1, 0, 0);
     this.player.getWorldDirection(this.playerDirection);
     this.playerDirection.normalize();
     if (this.playerActionState.forward !== 0) {
@@ -113,10 +112,7 @@ class Player {
       this.playerOnFloor = result.normal.z > 0;
       if (!this.playerOnFloor) {
         // slide along surface
-        this.playerVelocity.addScaledVector(
-          result.normal,
-          -result.normal.dot(this.playerVelocity)
-        );
+        this.playerVelocity.addScaledVector(result.normal, -result.normal.dot(this.playerVelocity));
       }
       this.playerCapsule.translate(result.normal.multiplyScalar(result.depth));
     }
@@ -124,7 +120,8 @@ class Player {
 
   /** Integrate velocity and update character transform */
   private updatePlayer(deltaTime: number) {
-    if (!this.player) return;
+    if (!this.player)
+      return;
 
     let speedRatio = 4;
     let damping = Math.exp(-20 * deltaTime) - 1;
@@ -143,28 +140,31 @@ class Player {
     if (this.playerActionState.forward > 0) {
       if (this.playerActionState.turn !== 0) {
         this.player.rotation.y -= this.playerActionState.turn * deltaTime;
-      } else {
+      }
+      else {
         this.player.rotation.y = Math.PI;
       }
       this.changeAction('run');
-    } else if (this.playerActionState.forward < 0) {
+    }
+    else if (this.playerActionState.forward < 0) {
       if (this.playerActionState.turn !== 0) {
         this.player.rotation.y += this.playerActionState.turn * deltaTime;
-      } else {
+      }
+      else {
         this.player.rotation.y = 0;
       }
       this.changeAction('run');
-    } else if (this.playerActionState.turn !== 0) {
+    }
+    else if (this.playerActionState.turn !== 0) {
       this.changeAction('run');
       this.player.rotation.y = this.playerActionState.turn * (Math.PI / 2);
-    } else {
+    }
+    else {
       this.changeAction('idle');
     }
 
     // Distance = velocity * time
-    const deltaPosition = this.playerVelocity
-      .clone()
-      .multiplyScalar(deltaTime * speedRatio);
+    const deltaPosition = this.playerVelocity.clone().multiplyScalar(deltaTime * speedRatio);
 
     // Vertical uses original scale (don’t amplify by speedRatio)
     deltaPosition.z /= speedRatio;
@@ -175,23 +175,24 @@ class Player {
     this.playerCollisions();
 
     // Apply capsule position to mesh (with ground offset)
-    this.player.position.copy(
-      new THREE.Vector3().subVectors(this.playerCapsule.start, this.playerFixVector)
-    );
+    this.player.position.copy(new THREE.Vector3().subVectors(this.playerCapsule.start, this.playerFixVector));
   }
 
   /** Switch animation action */
   private changeAction(actionName: string) {
     const next = this.allActions[actionName];
-    if (!next) return;
-    if (this.currentAction?.getClip().name === actionName) return;
+    if (!next)
+      return;
+    if (this.currentAction?.getClip().name === actionName)
+      return;
     this.executeCrossFade(actionName);
   }
 
   /** Cross-fade between current action and target action */
   private executeCrossFade(actionName: string) {
     const next = this.allActions[actionName];
-    if (!next) return;
+    if (!next)
+      return;
 
     next.enabled = true;
     next.setEffectiveTimeScale(1);
@@ -240,19 +241,23 @@ class Player {
       switch (event.code) {
         case 'KeyW':
           this.keyStates.W = false;
-          if (this.playerActionState.forward === 1) this.playerActionState.forward = 0;
+          if (this.playerActionState.forward === 1)
+            this.playerActionState.forward = 0;
           break;
         case 'KeyA':
           this.keyStates.A = false;
-          if (this.playerActionState.turn === -1) this.playerActionState.turn = 0;
+          if (this.playerActionState.turn === -1)
+            this.playerActionState.turn = 0;
           break;
         case 'KeyS':
           this.keyStates.S = false;
-          if (this.playerActionState.forward === -1) this.playerActionState.forward = 0;
+          if (this.playerActionState.forward === -1)
+            this.playerActionState.forward = 0;
           break;
         case 'KeyD':
           this.keyStates.D = false;
-          if (this.playerActionState.turn === 1) this.playerActionState.turn = 0;
+          if (this.playerActionState.turn === 1)
+            this.playerActionState.turn = 0;
           break;
         case 'Space':
           this.keyStates.Space = false;
@@ -272,7 +277,8 @@ class Player {
 
       // Cast shadows
       this.player.traverse((obj: any) => {
-        if (obj.isMesh) obj.castShadow = true;
+        if (obj.isMesh)
+          obj.castShadow = true;
       });
 
       // Animations
@@ -287,7 +293,7 @@ class Player {
         this.allActions[clip.name] = action;
       }
 
-      this.currentAction = this.allActions['idle'] ?? null;
+      this.currentAction = this.allActions.idle ?? null;
 
       // Keyboard
       this.keyListen();

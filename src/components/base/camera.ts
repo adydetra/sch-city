@@ -1,6 +1,6 @@
 import { PerspectiveCamera, Vector3 } from 'three';
+import { debugObject, gui } from '@/components/common/gui';
 import size from '@/config/size';
-import { gui, debugObject } from '@/components/common/gui';
 
 function createCamera() {
   const camera = new PerspectiveCamera(70, size.width / size.height, 0.1, 1000);

@@ -10,7 +10,7 @@ let moveLeft = false;
 let moveRight = false;
 let canJump = false;
 
-let cameraY = 2.6;
+const cameraY = 2.6;
 let raycaster: THREE.Raycaster | null = null;
 
 const velocity = new THREE.Vector3();
@@ -49,7 +49,8 @@ function initPlayer(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.Re
         moveRight = true;
         break;
       case 'Space':
-        if (canJump === true) velocity.y += 50;
+        if (canJump === true)
+          velocity.y += 50;
         canJump = false;
         break;
     }
@@ -86,7 +87,8 @@ function initPlayer(scene: THREE.Scene, camera: THREE.Camera, renderer: THREE.Re
 }
 
 function aupdatePlayer(delta: number) {
-  if (!pointerControls || !raycaster) return;
+  if (!pointerControls || !raycaster)
+    return;
 
   if (pointerControls.isLocked === true) {
     // ⬇️ getObject() → object
@@ -103,8 +105,10 @@ function aupdatePlayer(delta: number) {
     direction.x = Number(moveRight) - Number(moveLeft);
     direction.normalize();
 
-    if (moveForward || moveBackward) velocity.z -= direction.z * 400.0 * delta;
-    if (moveLeft || moveRight) velocity.x -= direction.x * 400.0 * delta;
+    if (moveForward || moveBackward)
+      velocity.z -= direction.z * 400.0 * delta;
+    if (moveLeft || moveRight)
+      velocity.x -= direction.x * 400.0 * delta;
 
     if (onObject === true) {
       velocity.y = Math.max(0, velocity.y);
@@ -127,7 +131,8 @@ function aupdatePlayer(delta: number) {
 
 // Update player tiap frame (dipakai di SchoolCanvas)
 function updatePlayer(delta: number) {
-  if (!pointerControls) return;
+  if (!pointerControls)
+    return;
 
   const playerSpeed = 100;
 
@@ -140,12 +145,15 @@ function updatePlayer(delta: number) {
     direction.x = Number(moveRight) - Number(moveLeft);
     direction.normalize();
 
-    if (moveForward || moveBackward) velocity.z += direction.z * playerSpeed * delta;
-    if (moveLeft || moveRight) velocity.x += direction.x * playerSpeed * delta;
+    if (moveForward || moveBackward)
+      velocity.z += direction.z * playerSpeed * delta;
+    if (moveLeft || moveRight)
+      velocity.x += direction.x * playerSpeed * delta;
 
-    pointerControls.moveRight(velocity.x * delta);   // geser XZ
+    pointerControls.moveRight(velocity.x * delta); // geser XZ
     pointerControls.moveForward(velocity.z * delta); // maju/mundur
-  } else {
+  }
+  else {
     velocity.x = 0;
     velocity.z = 0;
   }
@@ -169,24 +177,28 @@ function updatePlayer(delta: number) {
 
 // Cek tabrakan depan/samping
 function detectPlayerCollision() {
-  if (!pointerControls) return false;
+  if (!pointerControls)
+    return false;
 
   let rotationMatrix: THREE.Matrix4 | undefined;
   const collisionDistance = 0.5;
 
   // Arah kamera
-  let cameraDirection = pointerControls.getDirection(new THREE.Vector3(0, 0, 0)).clone();
+  const cameraDirection = pointerControls.getDirection(new THREE.Vector3(0, 0, 0)).clone();
 
   // Tentukan arah gerak (bukan arah pandang) → rotasi vektor
   if (moveBackward) {
     rotationMatrix = new THREE.Matrix4().makeRotationY(degreesToRadians(180));
-  } else if (moveLeft) {
+  }
+  else if (moveLeft) {
     rotationMatrix = new THREE.Matrix4().makeRotationY(degreesToRadians(90));
-  } else if (moveRight) {
+  }
+  else if (moveRight) {
     rotationMatrix = new THREE.Matrix4().makeRotationY(degreesToRadians(270));
   }
 
-  if (rotationMatrix) cameraDirection.applyMatrix4(rotationMatrix);
+  if (rotationMatrix)
+    cameraDirection.applyMatrix4(rotationMatrix);
 
   // Ray dari posisi player
   const origin = pointerControls.object.position;
@@ -197,7 +209,8 @@ function detectPlayerCollision() {
 
 // Cek apakah di atas suatu objek (untuk loncat/gravitasi)
 function detectOnObject() {
-  if (!pointerControls) return false;
+  if (!pointerControls)
+    return false;
 
   const collisionDistance = cameraY;
   const origin = pointerControls.object.position.clone();
@@ -211,7 +224,8 @@ function rayIntersect(ray: THREE.Raycaster, distance: number) {
   // `collidableObjects` berisi array Object3D (mis. scene.children)
   const intersects = ray.intersectObjects(collidableObjects, true);
   for (let i = 0; i < intersects.length; i++) {
-    if (intersects[i].distance < distance) return true;
+    if (intersects[i].distance < distance)
+      return true;
   }
   return false;
 }
@@ -236,15 +250,9 @@ function getPlayerPos() {
 }
 
 function setPlayerPos() {
-  if (!pointerControls) return;
+  if (!pointerControls)
+    return;
   playerPos = pointerControls.object.position.clone();
 }
 
-export {
-  updatePlayer,
-  initPlayer,
-  getPointerControl,
-  initCollidableObjects,
-  getPlayerPos,
-  setPlayerPos,
-};
+export { getPlayerPos, getPointerControl, initCollidableObjects, initPlayer, setPlayerPos, updatePlayer };

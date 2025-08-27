@@ -1,303 +1,322 @@
-import _, { has } from 'lodash';
+// src/findPath/astar.ts
 
-// 初始节点
-interface Point {
+// Minimal node shape used by the algorithm.
+// (Dibiarkan longgar agar tetap kompatibel dengan pembuat grid di tempat lain)
+interface Node {
   id: number;
   row: number;
   col: number;
-  status: 'default' | 'wall';
-  distance: number;
-  totalDistance: number;
-  heuristicDistance: number;
-  direction: string;
-  weight: 0;
-  previousNode: Point | null;
+  status: 'default' | 'wall' | 'visited';
+  distance: number; // g(n)
+  totalDistance: number; // f(n) = g(n) + h(n)
+  heuristicDistance?: number; // h(n)
+  direction?: string; // 'up' | 'down' | 'left' | 'right' | diagonal variants
+  weight: number;
+  previousNode?: Node | null;
+  path?: string[] | null; // optional turn-by-turn (if used downstream)
 }
 
-// A * 算法
-export function astar(grid, start, target, close_set) {
-  // Initialze nodes
+/**
+ * A* pathfinding.
+ * @returns 'success!' bila target tercapai; false bila tidak ada jalur.
+ */
+export function astar(
+  grid: Node[][],
+  start: Node,
+  target: Node,
+  closedSet: Node[],
+): 'success!' | false {
+  // initialize
   start.distance = 0;
-  start.direction = 'right';
   start.totalDistance = 0;
+  start.direction = 'right';
 
-  let open_set = [start];
-  while (open_set.length) {
-    let currentNode = getClosetNode(open_set);
-    if (currentNode.distance === Infinity) return false;
-    currentNode.status = 'visited';
-    close_set.push(currentNode);
+  let openSet: Node[] = [start];
 
-    if (currentNode.id === target.id) return 'success!';
+  while (openSet.length) {
+    const current = getClosestNode(openSet);
+    if (current.distance === Infinity)
+      return false;
 
-    let neighbors = getNeighbors(currentNode, grid);
-    open_set.push(...neighbors);
-    open_set = open_set.filter(
-      (neighbor) => neighbor.status !== 'visited' && neighbor.status !== 'wall',
-    );
-    updateNeighbors(currentNode, neighbors, target);
+    current.status = 'visited';
+    closedSet.push(current);
+
+    if (current.id === target.id)
+      return 'success!';
+
+    const neighbors = getNeighbors(current, grid);
+    openSet.push(...neighbors);
+
+    // keep only candidates we can still visit
+    openSet = openSet.filter(n => n.status !== 'visited' && n.status !== 'wall');
+
+    updateNeighbors(current, neighbors, target);
   }
+
   return false;
 }
 
-// 获取最近节点
-function getClosetNode(open_set: any[]) {
-  let currentClosest, index;
-  for (let i = 0; i < open_set.length; i++) {
-    if (!currentClosest || currentClosest.totalDistance > open_set[i].totalDistance) {
-      currentClosest = open_set[i];
-      index = i;
-    } else if (currentClosest.totalDistance === open_set[i].totalDistance) {
-      if (currentClosest.heuristicDistance > open_set[i].heuristicDistance) {
-        currentClosest = open_set[i];
-        index = i;
+/** Pick node with the smallest f(n). Tie-breaker uses smaller h(n). */
+function getClosestNode(openSet: Node[]) {
+  let best: Node | undefined;
+  let idx = -1;
+
+  for (let i = 0; i < openSet.length; i++) {
+    const n = openSet[i];
+    if (!best || best.totalDistance > n.totalDistance) {
+      best = n;
+      idx = i;
+    }
+    else if (best.totalDistance === n.totalDistance) {
+      if ((best.heuristicDistance ?? Infinity) > (n.heuristicDistance ?? Infinity)) {
+        best = n;
+        idx = i;
       }
     }
   }
-  open_set.splice(index!, 1);
-  return currentClosest;
+
+  // remove from open set and return it
+  openSet.splice(idx, 1);
+  return best!;
 }
 
-function updateNeighbors(node, neighbors, target) {
-  for (let neighbor of neighbors) {
-    updateNode(node, neighbor, target);
+/** Update all neighbors from current node. */
+function updateNeighbors(current: Node, neighbors: Node[], target: Node) {
+  for (const nb of neighbors) updateNode(current, nb, target);
+}
+
+/** Relaxation step for one neighbor. */
+function updateNode(current: Node, targetNode: Node, actualTarget?: Node) {
+  const [stepCost, path, newDir] = getDistance(current, targetNode);
+
+  // lazily compute heuristic (Euclidean)
+  if (targetNode.heuristicDistance == null && actualTarget) {
+    targetNode.heuristicDistance = euclidDistance(targetNode, actualTarget);
+  }
+
+  const candidate = current.distance + targetNode.weight + stepCost;
+
+  if (candidate < targetNode.distance) {
+    targetNode.distance = candidate;
+    targetNode.previousNode = current;
+    targetNode.path = path;
+    targetNode.direction = newDir;
+    targetNode.totalDistance = targetNode.distance + (targetNode.heuristicDistance ?? 0);
   }
 }
 
-// 更新节点
-function updateNode(currentNode, targetNode, actualTargetNode?) {
-  let distance = getDistance(currentNode, targetNode);
-  let distanceToCompare;
-  // 启发式函数为求曼哈顿距离
-  if (!targetNode.heuristicDistance) {
-    targetNode.heuristicDistance = euclidDistance(targetNode, actualTargetNode);
-  }
-  distanceToCompare = currentNode.distance + targetNode.weight + distance[0];
-  // Math.min(targetNode.distance,currentNode.distance + targetNode.weight + distance[0])
-  if (distanceToCompare < targetNode.distance) {
-    targetNode.distance = distanceToCompare;
-    targetNode.previousNode = currentNode;
-    targetNode.path = distance[1];
-    targetNode.direction = distance[2];
-    // f(n) = g(n) + h(n)
-    targetNode.totalDistance = targetNode.distance + targetNode.heuristicDistance;
-  }
-}
+/** Collect valid neighbors (4-neigh + diagonals) that are not walls/visited. */
+function getNeighbors(node: Node, grid: Node[][]) {
+  const res: Node[] = [];
+  const { row, col } = node;
 
-// 获取邻近节点
-function getNeighbors(node, grid) {
-  let neighbors = [];
-  const { col, row } = node;
-  if (row > 0) neighbors.push(grid[row - 1][col]);
-  if (row < grid.length - 1) neighbors.push(grid[row + 1][col]);
-  if (col > 0) neighbors.push(grid[row][col - 1]);
-  if (col < grid[0].length - 1) neighbors.push(grid[row][col + 1]);
+  // 4-neighborhood
+  if (row > 0)
+    res.push(grid[row - 1][col]);
+  if (row < grid.length - 1)
+    res.push(grid[row + 1][col]);
+  if (col > 0)
+    res.push(grid[row][col - 1]);
+  if (col < grid[0].length - 1)
+    res.push(grid[row][col + 1]);
 
-  // 右上对角
-  if (row > 0 && col < grid[0].length - 1) neighbors.push(grid[row - 1][col + 1]);
-  // 左上对角
-  if (row > 0 && col > 0) neighbors.push(grid[row - 1][col - 1]);
-  // 右下对角
+  // diagonals
+  if (row > 0 && col < grid[0].length - 1)
+    res.push(grid[row - 1][col + 1]);
+  if (row > 0 && col > 0)
+    res.push(grid[row - 1][col - 1]);
   if (row < grid.length - 1 && col < grid[0].length - 1)
-    neighbors.push(grid[row + 1][col + 1]);
-  // 左下对角
-  if (row < grid.length - 1 && col > 0) neighbors.push(grid[row + 1][col - 1]);
+    res.push(grid[row + 1][col + 1]);
+  if (row < grid.length - 1 && col > 0)
+    res.push(grid[row + 1][col - 1]);
 
-  return neighbors.filter(
-    (neighbor) => neighbor.status !== 'visited' && neighbor.status !== 'wall',
-  );
+  return res.filter(n => n.status !== 'visited' && n.status !== 'wall');
 }
 
-function getDistance(nodeOne, nodeTwo) {
-  let x1 = nodeOne.row;
-  let y1 = nodeOne.col;
-  let x2 = nodeTwo.row;
-  let y2 = nodeTwo.col;
-  // 邻居点在其上边
+/**
+ * Directional step cost + suggested turn/path + next direction.
+ * Return shape: [cost, pathOrNull, newDirection]
+ */
+function getDistance(a: Node, b: Node): [number, string[] | null, string] {
+  const x1 = a.row; const y1 = a.col;
+  const x2 = b.row; const y2 = b.col;
+
+  // neighbor is above
   if (x2 < x1 && y1 === y2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [1, ['f'], 'up'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [2, ['l', 'f'], 'up'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [2, ['r', 'f'], 'up'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [3, ['r', 'r', 'f'], 'up'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [1.5, null, 'up'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [2.5, null, 'up'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [1.5, null, 'up'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [2.5, null, 'up'];
-    }
   }
-  // 邻居点在其下边
+  // neighbor is below
   else if (x2 > x1 && y1 === y2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [3, ['r', 'r', 'f'], 'down'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [2, ['r', 'f'], 'down'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [2, ['l', 'f'], 'down'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [1, ['f'], 'down'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [2.5, null, 'down'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [1.5, null, 'down'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [2.5, null, 'down'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [1.5, null, 'down'];
-    }
   }
-  // 邻居点在其左边
+  // neighbor is left
   else if (y2 < y1 && x1 === x2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [2, ['l', 'f'], 'left'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [3, ['l', 'l', 'f'], 'left'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [1, ['f'], 'left'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [2, ['r', 'f'], 'left'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [2.5, null, 'left'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [2.5, null, 'left'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [1.5, null, 'left'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [1.5, null, 'left'];
-    }
   }
-  // 邻居点在其右边
+  // neighbor is right
   else if (y2 > y1 && x1 === x2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [2, ['r', 'f'], 'right'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [1, ['f'], 'right'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [3, ['r', 'r', 'f'], 'right'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [2, ['l', 'f'], 'right'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [1.5, null, 'right'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [1.5, null, 'right'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [2.5, null, 'right'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [2.5, null, 'right'];
-    }
   }
-  // 左上
+  // up-left
   else if (x2 < x1 && y1 > y2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [1.5, null, 'up-left'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [2.5, null, 'up-left'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [1.5, null, 'up-left'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [2.5, null, 'up-left'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [2, null, 'up-left'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [3, null, 'up-left'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [1, null, 'up-left'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [2, null, 'up-left'];
-    }
   }
-  // 右上
+  // up-right
   else if (x2 < x1 && y1 < y2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [1.5, null, 'up-right'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [1.5, null, 'up-right'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [2.5, null, 'up-right'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [2.5, null, 'up-right'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [1, null, 'up-right'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [2, null, 'up-right'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [2, null, 'up-right'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [3, null, 'up-right'];
-    }
   }
-  // 左下
+  // down-left
   else if (x2 > x1 && y1 > y2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [2.5, null, 'down-left'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [2.5, null, 'down-left'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [1.5, null, 'down-left'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [1.5, null, 'down-left'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [3, null, 'down-left'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [2, null, 'down-left'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [2, null, 'down-left'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [1, null, 'down-left'];
-    }
   }
-  // 右下
+  // down-right
   else if (x2 > x1 && y1 < y2) {
-    if (nodeOne.direction === 'up') {
+    if (a.direction === 'up')
       return [2.5, null, 'down-right'];
-    } else if (nodeOne.direction === 'right') {
+    else if (a.direction === 'right')
       return [1.5, null, 'down-right'];
-    } else if (nodeOne.direction === 'left') {
+    else if (a.direction === 'left')
       return [2.5, null, 'down-right'];
-    } else if (nodeOne.direction === 'down') {
+    else if (a.direction === 'down')
       return [1.5, null, 'down-right'];
-    } else if (nodeOne.direction === 'up-right') {
+    else if (a.direction === 'up-right')
       return [2, null, 'down-right'];
-    } else if (nodeOne.direction === 'down-right') {
+    else if (a.direction === 'down-right')
       return [1, null, 'down-right'];
-    } else if (nodeOne.direction === 'up-left') {
+    else if (a.direction === 'up-left')
       return [3, null, 'down-right'];
-    } else if (nodeOne.direction === 'down-left') {
+    else if (a.direction === 'down-left')
       return [2, null, 'down-right'];
-    }
   }
+
+  // Fallback (shouldn't happen if neighbor logic is correct)
+  return [1, null, a.direction || 'right'];
 }
 
-// 获取曼哈顿距离
-function manhattanDistance(nodeOne, nodeTwo) {
-  let nodeOneCoordinates = [nodeOne.row, nodeOne.col];
-  let nodeTwoCoordinates = [nodeTwo.row, nodeTwo.col];
-  let xChange = Math.abs(nodeOneCoordinates[0] - nodeTwoCoordinates[0]);
-  let yChange = Math.abs(nodeOneCoordinates[1] - nodeTwoCoordinates[1]);
-  return xChange + yChange;
+// --- Heuristics (kept for completeness; only Euclidean is used now) ---
+
+/** Manhattan distance */
+function manhattanDistance(a: Node, b: Node) {
+  const dx = Math.abs(a.row - b.row);
+  const dy = Math.abs(a.col - b.col);
+  return dx + dy;
 }
 
-// 获取对角距离
-function diagonalDistance(nodeOne, nodeTwo) {
-  let nodeOneCoordinates = [nodeOne.row, nodeOne.col];
-  let nodeTwoCoordinates = [nodeTwo.row, nodeTwo.col];
-  let dx = Math.abs(nodeOneCoordinates[0] - nodeTwoCoordinates[0]);
-  let dy = Math.abs(nodeOneCoordinates[1] - nodeTwoCoordinates[1]);
-  return dx + dy + (Math.sqrt(2) - 2.5) * Math.min(dx, dy);
+/** Diagonal distance (octile-like) */
+function diagonalDistance(a: Node, b: Node) {
+  const dx = Math.abs(a.row - b.row);
+  const dy = Math.abs(a.col - b.col);
+  return dx + dy + (Math.SQRT2 - 2.5) * Math.min(dx, dy);
 }
 
-// 获取欧几里得距离
-function euclidDistance(nodeOne, nodeTwo) {
-  let nodeOneCoordinates = [nodeOne.row, nodeOne.col];
-  let nodeTwoCoordinates = [nodeTwo.row, nodeTwo.col];
-  let dx = Math.abs(nodeOneCoordinates[0] - nodeTwoCoordinates[0]);
-  let dy = Math.abs(nodeOneCoordinates[1] - nodeTwoCoordinates[1]);
+/** Euclidean distance (scaled by 0.4 to match original behavior) */
+function euclidDistance(a: Node, b: Node) {
+  const dx = Math.abs(a.row - b.row);
+  const dy = Math.abs(a.col - b.col);
   return 0.4 * Math.sqrt(dx * dx + dy * dy);
 }

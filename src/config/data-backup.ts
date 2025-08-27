@@ -531,12 +531,12 @@ build_data.forEach((obj) => {
   buildNameMap.set(obj.name, 1);
 });
 
-const search_build = (keyword: string) => {
+function search_build(keyword: string) {
   return build_data.filter((item) => {
     // 使用正则表达式进行模糊搜索
     const regex = new RegExp(keyword, 'gi');
     return regex.test(item.name);
   });
-};
+}
 
 export { build_data, buildNameMap, search_build };

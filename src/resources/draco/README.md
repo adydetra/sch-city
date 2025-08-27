@@ -20,9 +20,9 @@ Each file is provided in two variations:
 Either variation may be used with `THREE.DRACOLoader`:
 
 ```js
-var dracoLoader = new THREE.DRACOLoader();
+const dracoLoader = new THREE.DRACOLoader();
 dracoLoader.setDecoderPath('path/to/decoders/');
-dracoLoader.setDecoderConfig({type: 'js'}); // (Optional) Override detection of WASM support.
+dracoLoader.setDecoderConfig({ type: 'js' }); // (Optional) Override detection of WASM support.
 ```
 
 Further [documentation on GitHub](https://github.com/google/draco/tree/master/javascript/example#static-loading-javascript-decoder).

@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import type { Build } from '@/config/data';
+import { Button, Flex, Image, Tag, Typography } from 'antd'; // Add Button import
 import classNames from 'classnames';
-import { Flex, Tag, Image, Typography, Button } from 'antd'; // Add Button import
-import styles from './index.module.less';
-import { Build } from '@/config/data';
-import food from '@/resources/images/food.svg';
-import play from '@/resources/images/shopping.svg';
+import React, { useEffect, useRef, useState } from 'react';
 import dorm from '@/resources/images/dorm.svg';
+import food from '@/resources/images/food.svg';
 import pb from '@/resources/images/public.svg';
+import play from '@/resources/images/shopping.svg';
+import styles from './index.module.less';
 
 interface Props {
   build?: Build;
@@ -20,9 +20,9 @@ const { Paragraph, Text } = Typography;
 const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
   const cardRef = useRef(null);
   const [ellipsis, setEllipsis] = useState(true);
-  
+
   useEffect(() => {
-    function handleOutsideClick(event: { target: any; }) {
+    function handleOutsideClick(event: { target: any }) {
       if (cardRef.current && !cardRef.current.contains(event.target)) {
         hideCard();
         backCamera();
@@ -38,10 +38,7 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
     <>
       {showCard && (
         <div className={styles.cardBox}>
-          <div
-            ref={cardRef}
-            className={classNames(styles.infoContainer, 'beauti-scroll-bar')}
-          >
+          <div ref={cardRef} className={classNames(styles.infoContainer, 'beauti-scroll-bar')}>
             {/* Close Button */}
             <Button
               type="primary"
@@ -64,7 +61,7 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
               {!['food', 'play', 'dorm'].includes(build?.type) && <img src={pb} alt="" />}
               {build?.name}
             </div>
-            
+
             {/* Time */}
             <div className={styles.time}>{build?.info.timeLimit}</div>
 
@@ -94,10 +91,7 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
               >
                 {build?.info.brief}
                 {!ellipsis && (
-                  <span
-                    className={styles.closeBrief}
-                    onClick={() => setEllipsis(!ellipsis)}
-                  >
+                  <span className={styles.closeBrief} onClick={() => setEllipsis(!ellipsis)}>
                     Tutup
                   </span>
                 )}
@@ -109,12 +103,7 @@ const Card: React.FC<Props> = ({ showCard, build, hideCard, backCamera }) => {
               <Flex wrap="wrap" gap={2}>
                 <Image.PreviewGroup>
                   {new Array(build?.info.count).fill(0).map((item, index) => (
-                    <Image
-                      key={index}
-                      width={'30%'}
-                      height={66}
-                      src={build?.info.photo + '/img_' + (index + 1) + '.JPG'}
-                    />
+                    <Image key={index} width="30%" height={66} src={`${build?.info.photo}/img_${index + 1}.JPG`} />
                   ))}
                 </Image.PreviewGroup>
               </Flex>

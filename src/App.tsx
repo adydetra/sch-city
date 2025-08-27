@@ -1,15 +1,11 @@
-import './App.less';
-import React, { useEffect, useRef, useState } from 'react';
-import SchoolCanvas from '@/components/schoolCanvas';
-import OperateBorad from './components/operateBorad';
-import { Build } from './config/data';
-import AsideButton from '@/components/asideButton';
+import type { Build } from './config/data';
+import React, { useRef, useState } from 'react';
 import { CSSTransition } from 'react-transition-group';
-import icon_first from '@/resources/images/first.svg';
+import AsideButton from '@/components/asideButton';
+import SchoolCanvas from '@/components/schoolCanvas';
 import icon_resetCamera from '@/resources/images/reset.svg';
-import icon_god from '@/resources/images/god.svg';
-import loadBMap from '@/utils/loadBMap';
-import loadAMap from '@/utils/loadAMap';
+import OperateBorad from './components/operateBorad';
+import './App.less';
 
 interface LL {
   longitude: number;
@@ -35,7 +31,8 @@ const App: React.FC = () => {
   const findPath = () => {
     school.current?.resetNavigation();
     const len = school.current?.startFindPath(start, finish);
-    if (len) setDistance(len);
+    if (len)
+      setDistance(len);
   };
 
   // Switch POV
@@ -43,7 +40,8 @@ const App: React.FC = () => {
     if (controlType === 'first') {
       setControlType('god');
       school.current?.setControls('god');
-    } else {
+    }
+    else {
       setControlType('first');
       school.current?.setControls('first');
     }
@@ -96,7 +94,7 @@ const App: React.FC = () => {
 
           {/* Aside buttons */}
           <div className="asideBtns">
-            {/* 
+            {/*
             <AsideButton
               clickSth={handlelChangeControl}
               btn_value={controlType === 'first' ? 'Sky POV' : 'Eye POV'}
@@ -106,7 +104,7 @@ const App: React.FC = () => {
             {controlType === 'god' && (
               <AsideButton
                 clickSth={handlelResetCamera}
-                btn_value={'Cam Reset'}
+                btn_value="Cam Reset"
                 btn_icon={icon_resetCamera}
               />
             )}

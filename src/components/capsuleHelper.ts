@@ -8,7 +8,7 @@ import * as THREE from 'three';
 export default function capsuleHelper(R: number, H: number): THREE.Group {
   const group = new THREE.Group();
   const material = new THREE.MeshLambertMaterial({
-    color: 0x00ffff,
+    color: 0x00FFFF,
     transparent: true,
     opacity: 0.5,
   });
@@ -16,7 +16,8 @@ export default function capsuleHelper(R: number, H: number): THREE.Group {
   // hemisphere builder
   const makeHemisphere = (flip = false) => {
     const g = new THREE.SphereGeometry(R, 25, 25, 0, Math.PI * 2, 0, Math.PI / 2);
-    if (flip) g.rotateX(Math.PI); // flip for bottom hemisphere
+    if (flip)
+      g.rotateX(Math.PI); // flip for bottom hemisphere
     return new THREE.Mesh(g, material);
   };
 

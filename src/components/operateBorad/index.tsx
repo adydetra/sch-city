@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Input, Select, Button, Tag, Switch } from 'antd';
-import classNames from 'classnames';
-import styles from './index.module.less';
-import { Build, search_build } from '@/config/data';
+import type { Build } from '@/config/data';
+import React, { useState } from 'react';
+import { search_build } from '@/config/data';
 
 interface Props {
   start: Build | undefined;
@@ -14,15 +12,7 @@ interface Props {
   distance: number;
 }
 
-const OperateBorad: React.FC<Props> = ({
-  start,
-  finish,
-  changeStart,
-  changeFinish,
-  findPath,
-  switchTagsShow,
-  distance,
-}) => {
+const OperateBorad: React.FC<Props> = ({ start, finish, changeStart, changeFinish, findPath, switchTagsShow, distance }) => {
   const [startOptions, setStartOptions] = useState<Build[]>([]);
   const [finishOptions, setFinishOptions] = useState<Build[]>([]);
   const [isFindBtnShaked, setIsFindBtnShaked] = useState<boolean>(false);
@@ -39,7 +29,7 @@ const OperateBorad: React.FC<Props> = ({
 
   // 模糊搜索
   const handleSearch = (type: 0 | 1, value: string) => {
-    let kw = value.trim();
+    const kw = value.trim();
     if (!kw) return;
     const res = search_build(kw);
     if (type === 0) {
